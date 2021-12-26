@@ -43,5 +43,4 @@ jobs:
         run: |
           git add .
           git commit -m "Auto Generated UML files" -a
-          git pull
           git push origin ${{github.head_ref}}
