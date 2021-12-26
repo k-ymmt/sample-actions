@@ -42,5 +42,5 @@ jobs:
       - name: Commit files
         run: |
           git add .
-          git commit -m "Auto Generated UML files" -a
-          git push -u origin HEAD:${GITHUB_REF}
+          git commit -m "Auto Generated UML files"
+          git push
