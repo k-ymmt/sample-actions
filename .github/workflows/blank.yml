@@ -25,23 +25,23 @@ jobs:
 
       # Runs a single command using the runners shell
       - name: Get changed UML files
-          id: getfiles
-          run: |
-            git diff --name-only --diff-filter=ACMRT ${{ github.event.pull_request.base.sha }} ${{github.sha }} \
-            | grep -e .pu$ -e .puml$
-            | awk -F ' ' '{
-              # ensure we are not trying to process deleted files
-              # only process puml files
-              # do not try to process our theme or custom config
-              if ( $1 !~ /^delete$/ && $4 ~ /\.puml$/ && $4 !~ /(theme|config)\.puml$/ )
-              {
-                # only print the file name and strip newlines for spaces
-                printf "::set-output name=puml::" "%s ", $4
-              }
+        id: getfiles
+        run: |
+          git diff --name-only --diff-filter=ACMRT ${{ github.event.pull_request.base.sha }} ${{github.sha }} \
+          | grep -e .pu$ -e .puml$
+          | awk -F ' ' '{
+            # ensure we are not trying to process deleted files
+            # only process puml files
+            # do not try to process our theme or custom config
+            if ( $1 !~ /^delete$/ && $4 ~ /\.puml$/ && $4 !~ /(theme|config)\.puml$/ )
+            {
+              # only print the file name and strip newlines for spaces
+              printf "::set-output name=puml::" "%s ", $4
             }
-            END { print "" } # ensure we do print a newline at the end
-            '
-            
+          }
+          END { print "" } # ensure we do print a newline at the end
+          '
+          
       - name: UML files considered echo output
         run: echo ${{ steps.getfiles.outputs.puml }}
       - name: Generate PNG Diagrams
