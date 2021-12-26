@@ -4,27 +4,44 @@ name: CI
 
 # Controls when the workflow will run
 on:
-  # Triggers the workflow on push or pull request events but only for the main branch
-  push:
-    branches: [ main ]
   pull_request:
     branches: [ main ]
-
-  # Allows you to run this workflow manually from the Actions tab
-  workflow_dispatch:
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
   # This workflow contains a single job called "build"
-  build:
+  changedFiles:
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
+    outputs:
+      pu: ${{ steps.changes.outputs.puml }}
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
 
       # Runs a single command using the runners shell
-      - name: Run a one-line script
-        run: echo ${{ steps.changed-files.outputs.all_modified_files }}
+      - name: Get changed UML files
+        id: getfiles
+        run: |
+          echo "::set-output name=puml::$(git diff --name-only --diff-filter=ACMRT ${{ github.event.pull_request.base.sha }} ${{ github.event.pull_request.head.sha }} | grep -e .pu$ -e .puml$)"
+          
+      - name: UML files considered echo output
+        run: echo ${{ steps.getfiles.outputs.puml }}
+      - name: Generate PNG Diagrams
+        uses: cloudbees/plantuml-github-action@master
+        with:
+          args: -v -tpng ${{ steps.getfiles.outputs.puml }}
+      - name: git config
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+      - name: Commit files
+        run: |
+          git checkout ${{github.head_ref}}
+          git add .
+          git commit -m "Auto Generated UML files"
+          git push
