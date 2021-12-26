@@ -41,6 +41,7 @@ jobs:
           git config --local user.name "GitHub Action"
       - name: Commit files
         run: |
+          git checkout ${{github.head_ref}}
           git add .
           git commit -m "Auto Generated UML files"
           git push
