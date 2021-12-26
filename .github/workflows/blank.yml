@@ -27,7 +27,7 @@ jobs:
       - name: Get changed UML files
         id: getfiles
         run: |
-          echo "::set-output name=puml::$(git diff --name-only --diff-filter=ACMRT ${{ github.event.pull_request.base.sha }} ${{github.sha }} | grep grep -e .pu$ -e .puml$)"
+          echo "::set-output name=puml::$(git diff --name-only --diff-filter=ACMRT ${{ github.event.pull_request.base.sha }} ${{ github.event.pull_request.head.sha }} | grep grep -e .pu$ -e .puml$)"
           
       - name: UML files considered echo output
         run: echo ${{ steps.getfiles.outputs.puml }}
