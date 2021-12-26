@@ -28,7 +28,7 @@ jobs:
         id: getfiles
         run: |
           git diff --name-only --diff-filter=ACMRT ${{ github.event.pull_request.base.sha }} ${{github.sha }} \
-          | grep -e .pu$ -e .puml$
+          | grep -e .pu$ -e .puml$ \
           | awk -F ' ' '{
             # ensure we are not trying to process deleted files
             # only process puml files
